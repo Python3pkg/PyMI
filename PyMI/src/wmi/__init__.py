@@ -288,7 +288,7 @@ class _Instance(_BaseEntity):
             el_type, value)
 
     @mi_to_wmi_exception
-    def associators(self, wmi_association_class=u"", wmi_result_class=u"",
+    def associators(self, wmi_association_class="", wmi_result_class="",
                     operation_options=None):
         return self._conn.get_associators(
             self, wmi_association_class, wmi_result_class,
@@ -315,7 +315,7 @@ class _Instance(_BaseEntity):
 
     @mi_to_wmi_exception
     def set(self, **kwargs):
-        for k, v in kwargs.items():
+        for k, v in list(kwargs.items()):
             self.__setattr__(k, v)
 
 
@@ -351,13 +351,13 @@ class _Class(_BaseEntity):
 
         # TODO: sanitize input
         filter = " and ".join(
-            "%(k)s = '%(v)s'" % {'k': k, 'v': v} for k, v in argv.items())
+            "%(k)s = '%(v)s'" % {'k': k, 'v': v} for k, v in list(argv.items()))
         if filter:
             where = " where %s" % filter
         else:
             where = ""
 
-        wql = (u"select %(fields)s from %(class_name)s%(where)s" %
+        wql = ("select %(fields)s from %(class_name)s%(where)s" %
                {"fields": fields,
                 "class_name": self.class_name,
                 "where": where})
@@ -418,11 +418,11 @@ class _EventWatcher(object):
             if conn:
                 if instance:
                     event = _Instance(conn,
-                                      instance[u"TargetInstance"].clone(),
+                                      instance["TargetInstance"].clone(),
                                       use_conn_weak_ref=True)
                     try:
                         previous_inst = _Instance(
-                            conn, instance[u'PreviousInstance'].clone(),
+                            conn, instance['PreviousInstance'].clone(),
                             use_conn_weak_ref=True)
                         object.__setattr__(event, 'previous', previous_inst)
                     except (mi.error, AttributeError):
@@ -573,8 +573,8 @@ class _Connection(object):
 
     @mi_to_wmi_exception
     @avoid_blocking_call
-    def get_associators(self, instance, wmi_association_class=u"",
-                        wmi_result_class=u"",
+    def get_associators(self, instance, wmi_association_class="",
+                        wmi_result_class="",
                         operation_options=None):
         operation_options = self._get_mi_operation_options(
             operation_options=operation_options)
@@ -613,7 +613,7 @@ class _Connection(object):
         for i, v in enumerate(args):
             _, el_type, _ = params.get_element(i)
             params[i] = self._unwrap_element(el_type, v)
-        for k, v in kwargs.items():
+        for k, v in list(kwargs.items()):
             _, el_type, _ = params.get_element(k)
             params[k] = self._unwrap_element(el_type, v)
 
@@ -681,7 +681,7 @@ class _Connection(object):
     def get_instance(self, class_name, key):
         c = self.get_class(class_name)
         key_instance = self.new_instance_from_class(c)
-        for k, v in key.items():
+        for k, v in list(key.items()):
             key_instance._instance[six.text_type(k)] = v
         with self._session.get_instance(
                 self._ns, key_instance._instance) as op:

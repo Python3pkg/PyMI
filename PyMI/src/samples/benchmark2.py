@@ -19,41 +19,41 @@ def test_mi():
     with mi.Application() as a:
         with a.create_session(protocol=mi.PROTOCOL_WMIDCOM) as s:
             with s.exec_query(
-                    u"root/virtualization/v2",
-                    u"select * from Msvm_VirtualSystemManagementService") as q:
+                    "root/virtualization/v2",
+                    "select * from Msvm_VirtualSystemManagementService") as q:
                 svc = q.get_next_instance()
 
                 c = svc.get_class()
-                p = a.create_method_params(c, u"GetSummaryInformation")
+                p = a.create_method_params(c, "GetSummaryInformation")
 
                 with s.exec_query(
-                        u"root/virtualization/v2",
-                        u"select * from Msvm_ComputerSystem where "
+                        "root/virtualization/v2",
+                        "select * from Msvm_ComputerSystem where "
                         "ElementName = '%s'" % VM_NAME) as q1:
                     vm = q1.get_next_instance()
 
                     with s.get_associators(
-                            u"root/virtualization/v2",
-                            vm, assoc_class=u"Msvm_SettingsDefineState",
-                            result_class=u"Msvm_VirtualSystem"
+                            "root/virtualization/v2",
+                            vm, assoc_class="Msvm_SettingsDefineState",
+                            result_class="Msvm_VirtualSystem"
                             "SettingData") as q2:
                         vssd = q2.get_next_instance()
 
-                        p[u'SettingData'] = (vssd,)
-                        p[u'requestedInformation'] = (4, 100, 103, 105)
+                        p['SettingData'] = (vssd,)
+                        p['requestedInformation'] = (4, 100, 103, 105)
 
                         with s.invoke_method(
-                                svc, u"GetSummaryInformation", p) as q3:
+                                svc, "GetSummaryInformation", p) as q3:
                             r = q3.get_next_instance()
-                            print("Result: %s" % r[u"ReturnValue"])
-                            summary_info = r[u"SummaryInformation"][0]
+                            print(("Result: %s" % r["ReturnValue"]))
+                            summary_info = r["SummaryInformation"][0]
 
-                            print("vCPUs: %s" %
-                                  summary_info[u"NumberOfProcessors"])
-                            print("EnabledState: %s" %
-                                  summary_info[u"EnabledState"])
-                            print("Memory: %s" % summary_info[u"MemoryUsage"])
-                            print("UpTime: %s" % summary_info[u"UpTime"])
+                            print(("vCPUs: %s" %
+                                  summary_info["NumberOfProcessors"]))
+                            print(("EnabledState: %s" %
+                                  summary_info["EnabledState"]))
+                            print(("Memory: %s" % summary_info["MemoryUsage"]))
+                            print(("UpTime: %s" % summary_info["UpTime"]))
 
 
 def test_wmi_new():
@@ -81,13 +81,13 @@ def test_wmi(wmi):
         [4, 100, 103, 105],
         [vssd.path_()])
 
-    print("Result: %s" % ret_val)
+    print(("Result: %s" % ret_val))
     summary_info = summary_info[0]
 
-    print("vCPUs: %s" % summary_info.NumberOfProcessors)
-    print("EnabledState: %s" % summary_info.EnabledState)
-    print("Memory: %s" % summary_info.MemoryUsage)
-    print("UpTime: %s" % summary_info.UpTime)
+    print(("vCPUs: %s" % summary_info.NumberOfProcessors))
+    print(("EnabledState: %s" % summary_info.EnabledState))
+    print(("Memory: %s" % summary_info.MemoryUsage))
+    print(("UpTime: %s" % summary_info.UpTime))
 
 
 if __name__ == '__main__':
@@ -102,9 +102,9 @@ if __name__ == '__main__':
     t_old = timeit.timeit(
         "test_wmi_old()", setup="from __main__ import test_wmi_old", number=10)
 
-    print("Old WMI module: %s seconds" % t_old)
-    print("New WMI module: %s seconds" % t_wrap)
-    print("MI module: %s seconds" % t_new)
+    print(("Old WMI module: %s seconds" % t_old))
+    print(("New WMI module: %s seconds" % t_wrap))
+    print(("MI module: %s seconds" % t_new))
 
-    print("Performance improvement (MI over old WMI): {percent:.2%}".format(
-        percent=(1 - t_new / t_old)))
+    print(("Performance improvement (MI over old WMI): {percent:.2%}".format(
+        percent=(1 - t_new / t_old))))

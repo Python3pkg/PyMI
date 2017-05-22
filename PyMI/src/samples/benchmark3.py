@@ -80,8 +80,8 @@ if __name__ == '__main__':
     t_old = timeit.timeit(
         "test_wmi()", setup="from __main__ import test_wmi", number=1)
 
-    print("Old WMI module: %s seconds" % t_old)
-    print("New WMI module: %s seconds" % t_new)
+    print(("Old WMI module: %s seconds" % t_old))
+    print(("New WMI module: %s seconds" % t_new))
 
-    print("Performance improvement: {percent:.2%}".format(
-        percent=(1 - t_new / t_old)))
+    print(("Performance improvement: {percent:.2%}".format(
+        percent=(1 - t_new / t_old))))
